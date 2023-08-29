@@ -5,7 +5,7 @@ import bubbleImg from './assets/bubble.png'
 import { SetQuestionQty } from './features/SetQuestionQty'
 import { useState } from 'react'
 
-// enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictated what stage of play the user is in whilst they use the app.
+// enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictate what stage of play the user is in whilst they use the app.
 
 enum Step {
   SetQuestionQty,
@@ -27,15 +27,15 @@ export const App = () => {
   const renderScreenByStep = () => {
     switch (step) {
       case Step.SetQuestionQty:
-        return <SetQuestionQty />
+        return <SetQuestionQty max={30} min={5} step={5} defaultVal={10} />
       case Step.SetQuestionCategory:
-        return <SetQuestionQty />
+        return <></>
       case Step.SetQuestionDifficulty:
-        return <SetQuestionQty />
+        return <></>
       case Step.Play:
-        return <SetQuestionQty />
+        return <></>
       case Step.ScoreScreen:
-        return <SetQuestionQty />
+        return <></>
       default:
         return null
     }
@@ -52,7 +52,7 @@ export const App = () => {
           right={-120}
           top={100}
         ></Image>
-        <Box>{renderScreenByStep()}</Box>
+        <Box mt={100}>{renderScreenByStep()}</Box>
       </Box>
     </>
   )

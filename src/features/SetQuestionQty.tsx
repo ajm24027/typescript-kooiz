@@ -4,36 +4,64 @@ import {
   SliderMark,
   SliderTrack,
   SliderFilledTrack,
-  SliderThumb
+  SliderThumb,
+  Flex,
+  Heading
 } from '@chakra-ui/react'
 
-// Here <number> is used after useState to declare that only numbers should be set to state. No need to guess what the slider value should accept.
+// interface of Props tells the code what to expect when it recieves Props - later in the code we have setQuestionQty = (p : Props), which is the equivalent of writing setQuestionQty = (max, min, step) - which is fine, this makes the code easier to read.
 
-export const SetQuestionQty = () => {
-  const [sliderValue, setSliderValue] = useState<number>(50)
+// interface Props {
+//   max: number
+//   min: number
+//   step: number
+// }
+
+export const SetQuestionQty = (p: {
+  max: number
+  min: number
+  step: number
+  defaultVal: number
+}) => {
+  // Here <number> is used after useState to declare that only numbers should be set to state. No need to guess what the slider value should accept.
+  const [sliderValue, setSliderValue] = useState<number>(p.defaultVal)
+
+  // We're telling renderMarks() to expect a return value of JSX.Element Array.
+  const renderMarks = (): JSX.Element[] => {
+    let marks = []
+    for (let index = p.min; index <= p.max; index += p.step) {
+      marks.push(
+        <SliderMark key={index} ml={-2} pt={4} value={index}>
+          {index}
+        </SliderMark>
+      )
+    }
+    return marks
+  }
 
   return (
     <>
-      <Slider aria-label="slider-ex-6" onChange={(val) => setSliderValue(val)}>
-        <SliderMark value={25}>25%</SliderMark>
-        <SliderMark value={50}>50%</SliderMark>
-        <SliderMark value={75}>75%</SliderMark>
-        <SliderMark
+      <Flex direction={'column'} alignItems={'center'}>
+        <Heading as="h1" fontSize="3xl" mb={20}>
+          How many questions?
+        </Heading>
+        <Slider
           value={sliderValue}
-          textAlign="center"
-          bg="blue.500"
-          color="white"
-          mt="-10"
-          ml="-5"
-          w="12"
+          maxWidth={400}
+          max={p.max}
+          min={p.min}
+          step={p.step}
+          colorScheme="yellow"
+          aria-label="slider-ex-6"
+          onChange={(val) => setSliderValue(val)}
         >
-          {sliderValue}%
-        </SliderMark>
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
-        <SliderThumb />
-      </Slider>
+          {renderMarks()}
+          <SliderTrack color="yellow">
+            <SliderFilledTrack />
+          </SliderTrack>
+          <SliderThumb />
+        </Slider>
+      </Flex>
     </>
   )
 }
