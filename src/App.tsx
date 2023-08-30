@@ -4,9 +4,16 @@ import bubbleImg from './assets/bubble.png'
 import '../global.css'
 import { useState } from 'react'
 import { SetQuestionQty } from './features/SetQuestionQty'
-import { FetchQuizParams, QuizDifficulty, QuizType } from './types/quiz-types'
+import {
+  FetchQuizParams,
+  QuizDifficulty,
+  QuizType,
+  QuizItem
+} from './types/quiz-types'
 import { SetQuizCategory } from './features/SetQuizCategory'
 import { SetQuizDifficulty } from './features/SetQuizDifficulty'
+import { QuizAPI } from './api/quiz-api'
+import { PlayQuiz } from './features/PlayQuiz'
 
 // enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictate what stage of play the user is in whilst they use the app.
 
@@ -26,7 +33,10 @@ export function App() {
     difficulty: QuizDifficulty.Mixed,
     type: QuizType.Multiple
   })
+  const [quiz, setQuiz] = useState<QuizItem[]>([])
+
   console.log(quizParams)
+
   const header = (
     <Flex justify="center">
       <Image h="24" src={logoImg}></Image>
@@ -63,20 +73,25 @@ export function App() {
         )
       case Step.SetQuizDifficulty:
         return (
-          <>
-            <SetQuizDifficulty
-              onClickNext={(difficulty: QuizDifficulty) => {
-                setQuizParams({
-                  ...quizParams,
-                  difficulty
-                })
+          <SetQuizDifficulty
+            onClickNext={async (difficulty: QuizDifficulty) => {
+              const params = { ...quizParams, difficulty }
+              setQuizParams(params)
+              const quizResp = await QuizAPI.fetchQuiz(params)
+              if (quizResp.length > 0) {
+                setQuiz(await QuizAPI.fetchQuiz(params))
                 setStep(Step.Play)
-              }}
-            />
-          </>
+              } else {
+                alert(
+                  `We could not find ${params.amount} for this category, restarting game! `
+                )
+                setStep(Step.SetQuestionQty)
+              }
+            }}
+          />
         )
       case Step.Play:
-        return <></>
+        return <PlayQuiz quiz={quiz} />
       case Step.ScoreScreen:
         return <></>
       default:
