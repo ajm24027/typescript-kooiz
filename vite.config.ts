@@ -9,8 +9,8 @@ export default defineConfig({
     port: 3000,
     watch: {
       usePolling: true,
-  },
-},
+      },
+    },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src")

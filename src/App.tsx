@@ -5,7 +5,8 @@ import '../global.css'
 import { useState } from 'react'
 import { SetQuestionQty } from './features/SetQuestionQty'
 import { FetchQuizParams, QuizDifficulty, QuizType } from './types/quiz-types'
-import { SetQuestionCategory } from './features/SetQuestionCategory'
+import { SetQuizCategory } from './features/SetQuizCategory'
+import { SetQuizDifficulty } from './features/SetQuizDifficultty'
 
 // enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictate what stage of play the user is in whilst they use the app.
 
@@ -49,9 +50,23 @@ export function App() {
           />
         )
       case Step.SetQuestionCategory:
-        return <SetQuestionCategory />
+        return (
+          <SetQuizCategory
+            onClickNext={(category: string) => {
+              setQuizParams({
+                ...quizParams,
+                category: category === '-1' ? '' : category
+              })
+              setStep(Step.SetQuestionDifficulty)
+            }}
+          />
+        )
       case Step.SetQuestionDifficulty:
-        return <></>
+        return (
+          <>
+            <SetQuizDifficulty />
+          </>
+        )
       case Step.Play:
         return <></>
       case Step.ScoreScreen:
