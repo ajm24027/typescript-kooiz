@@ -6,8 +6,10 @@ import {
   SliderFilledTrack,
   SliderThumb,
   Flex,
-  Heading
+  Heading,
+  Button
 } from '@chakra-ui/react'
+import { ArrowForwardIcon } from '@chakra-ui/icons'
 
 // interface of Props tells the code what to expect when it recieves Props - later in the code we have setQuestionQty = (p : Props), which is the equivalent of writing setQuestionQty = (max, min, step) - which is fine, this makes the code easier to read.
 
@@ -22,13 +24,14 @@ export const SetQuestionQty = (p: {
   min: number
   step: number
   defaultVal: number
+  onClickNext: (amount: number) => void
 }) => {
   // Here <number> is used after useState to declare that only numbers should be set to state. No need to guess what the slider value should accept.
   const [sliderValue, setSliderValue] = useState<number>(p.defaultVal)
 
-  // We're telling renderMarks() to expect a return value of JSX.Element Array.
+  // We're telling renderMarks() to expect a return value of JSX.Element Array or each of the slider marks that we want to see on our slide bar.
   const renderMarks = (): JSX.Element[] => {
-    let marks = []
+    const marks = []
     for (let index = p.min; index <= p.max; index += p.step) {
       marks.push(
         <SliderMark key={index} ml={-2} pt={4} value={index}>
@@ -62,6 +65,15 @@ export const SetQuestionQty = (p: {
           <SliderThumb />
         </Slider>
       </Flex>
+      <Button
+        onClick={() => p.onClickNext(sliderValue)}
+        position={'absolute'}
+        top={'80%'}
+        right={'10'}
+        rightIcon={<ArrowForwardIcon />}
+      >
+        Set Category
+      </Button>
     </>
   )
 }
