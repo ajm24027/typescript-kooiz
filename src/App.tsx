@@ -13,7 +13,7 @@ import {
 import { SetQuizCategory } from './features/SetQuizCategory'
 import { SetQuizDifficulty } from './features/SetQuizDifficulty'
 import { QuizAPI } from './api/quiz-api'
-import { PlayQuiz } from './features/PlayQuiz'
+import { PlayQuiz } from './features/PlayQuix/PlayQuiz'
 
 // enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictate what stage of play the user is in whilst they use the app.
 

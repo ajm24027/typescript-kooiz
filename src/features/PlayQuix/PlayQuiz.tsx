@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { QuizItem } from '../types/quiz-types'
+import { QuizItem } from '../../types/quiz-types'
 import {
   Flex,
   Heading,
@@ -11,8 +11,9 @@ import {
   Box
 } from '@chakra-ui/react'
 import Lottie from 'lottie-react'
-import correctAnim from '../assets/lottie/correct.json'
-import incorrectAnim from '../assets/lottie/incorrect.json'
+import correctAnim from '../../assets/lottie/correct.json'
+import incorrectAnim from '../../assets/lottie/incorrect.json'
+import { Timer } from './Timer'
 
 // 1. Passing the Quiz Array (of QuizItems) into the PlayQuiz component.
 // 2. CurrentQuizItemIndex is initialized and is given a default state of 0, or the first question returned in the Quiz Prop.
@@ -20,6 +21,7 @@ import incorrectAnim from '../assets/lottie/incorrect.json'
 // 4. availableAnswers is initialized as an empty array that expects strings and will recieve an array built from correct_answer & incorrect_answers later in a useEffect.
 // 5. answer is initialized to record the answer that we select inside the radio group.
 // 6. Question Status is initialized and expects 3 kinds of states, default state is set to unanswered because on mount we haven't answered a question.
+// 7. History is initialized to keep track of the questions that we answered and if they were right or wrong.
 
 export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0)
@@ -67,7 +69,7 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     )
   }, [currentQuizItemIndex])
 
-  // useEffect that watches our answer. The logic is used to decide whether or not our answer was right or wrong.
+  // useEffect that watches our answer. The logic is used to decide whether or not our answer was right or wrong. Finally, we update history by adding the isValid (correct or incorrect value) to the current history array.
 
   useEffect(() => {
     if (answer) {
@@ -104,10 +106,20 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     )
   }
 
+  const failQuestion = () => {
+    setHistory([...history, false])
+    setQuestionStatus('invalid')
+  }
+
   return (
     <>
       <Flex direction={'column'} alignItems={'center'}>
         {renderProgressBar()}
+        {questionStatus === 'unanswered' && (
+          <Box position={'absolute'} top={50} right={50}>
+            <Timer max={10} onFinished={failQuestion} />
+          </Box>
+        )}
         <Heading
           fontSize="3xl"
           mt={100}
