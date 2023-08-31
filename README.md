@@ -2,6 +2,8 @@
 
 This project is the capstone project of the course: https://www.udemy.com/course/typescript-the-beginner-guide/ - by Robin Lebhar
 
+You can view the deployed version here - m-kooiz-app.surge.sh
+
 Within it, the following tools and Typescript concepts are leveraged:
 
 #### Tech used:
