@@ -1,4 +1,3 @@
-/* eslint-disable no-extra-semi */
 import { useState, useEffect } from 'react'
 import { QuizCategory } from '../types/quiz-types'
 import { QuizAPI } from '../api/quiz-api'
@@ -8,7 +7,8 @@ import {
   Button,
   Radio,
   RadioGroup,
-  SimpleGrid
+  SimpleGrid,
+  Spinner
 } from '@chakra-ui/react'
 import { ArrowForwardIcon } from '@chakra-ui/icons'
 
@@ -22,6 +22,8 @@ export const SetQuizCategory = (p: {
 
   const [selectedCategoryId, setSelectedCategoryId] = useState<string>('')
 
+  const [loading, setLoading] = useState<boolean>(true)
+
   // rather than creating an external function called fetchCategories, we can create an internal function to the useEffect by writing an anonymous async function that uses the setter useState to call the asynchronous function `fetchCategories()` that's inside our QuizAPI class.
 
   useEffect(() => {
@@ -30,10 +32,23 @@ export const SetQuizCategory = (p: {
         { id: -1, name: 'mixed' },
         ...(await QuizAPI.fetchCategories())
       ])
+      setLoading(!loading)
     }
-
     getCategories()
   }, [])
+
+  const renderSpinner = () => (
+    <Flex
+      top={'0'}
+      position={'absolute'}
+      justify={'center'}
+      alignItems={'center'}
+      minH={'100vh'}
+      width={'100%'}
+    >
+      <Spinner />
+    </Flex>
+  )
 
   // ChakraUI Radio component cannot have numbers as values, they require a sting, hence `category.id.toString()`
 
@@ -45,36 +60,36 @@ export const SetQuizCategory = (p: {
     )
   })
 
-  console.log(selectedCategoryId)
+  const categoriesView = () => {
+    return (
+      <>
+        <Flex direction={'column'} alignItems={'center'}>
+          <Heading as="h1" fontSize="3xl" mb={20}>
+            Which topic?
+          </Heading>
+        </Flex>
+        <RadioGroup
+          display={'flex'}
+          justifyContent={'center'}
+          value={selectedCategoryId}
+          onChange={setSelectedCategoryId}
+        >
+          <SimpleGrid columns={[1, 3, 4]} spacing={'4'}>
+            {radioList}
+          </SimpleGrid>
+        </RadioGroup>
+        <Button
+          onClick={() => p.onClickNext(selectedCategoryId)}
+          position={'absolute'}
+          top={'80%'}
+          right={'10'}
+          rightIcon={<ArrowForwardIcon />}
+        >
+          Set Difficulty
+        </Button>
+      </>
+    )
+  }
 
-  return (
-    <>
-      <Flex direction={'column'} alignItems={'center'}>
-        <Heading as="h1" fontSize="3xl" mb={20}>
-          Which topic?
-        </Heading>
-      </Flex>
-
-      <RadioGroup
-        display={'flex'}
-        justifyContent={'center'}
-        value={selectedCategoryId}
-        onChange={setSelectedCategoryId}
-      >
-        <SimpleGrid columns={[1, 3, 4]} spacing={'4'}>
-          {radioList}
-        </SimpleGrid>
-      </RadioGroup>
-
-      <Button
-        onClick={() => p.onClickNext(selectedCategoryId)}
-        position={'absolute'}
-        top={'80%'}
-        right={'10'}
-        rightIcon={<ArrowForwardIcon />}
-      >
-        Set Difficulty
-      </Button>
-    </>
-  )
+  return <>{loading ? renderSpinner() : categoriesView()} </>
 }

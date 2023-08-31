@@ -37,7 +37,7 @@ export function App() {
   const [quiz, setQuiz] = useState<QuizItem[]>([])
   const [history, setHistory] = useState<boolean[]>([])
 
-  // console.log(quizParams)
+  console.log(quizParams)
 
   const header = (
     <Flex justify="center">
