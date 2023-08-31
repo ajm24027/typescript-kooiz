@@ -23,7 +23,10 @@ import { Timer } from './Timer'
 // 6. Question Status is initialized and expects 3 kinds of states, default state is set to unanswered because on mount we haven't answered a question.
 // 7. History is initialized to keep track of the questions that we answered and if they were right or wrong.
 
-export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
+export const PlayQuiz = (p: {
+  quiz: QuizItem[]
+  onFinished: (history: boolean[]) => void
+}) => {
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0)
   const currentQuizItem: QuizItem = p.quiz[currentQuizItemIndex]
   const [availableAnswers, setAvailableAnswers] = useState<string[]>([])
@@ -106,6 +109,7 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     )
   }
 
+  // Prop function passed into the timer, sets a fail to the history (progress bar) and sets question status to invalid, triggering the fail interaction.
   const failQuestion = () => {
     setHistory([...history, false])
     setQuestionStatus('invalid')
@@ -144,8 +148,12 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
               : incorrectAnim
           }
           onComplete={() => {
-            setQuestionStatus('unanswered')
-            setCurrentQuizItemIndex(currentQuizItemIndex + 1)
+            if (currentQuizItemIndex < p.quiz.length - 1) {
+              setQuestionStatus('unanswered')
+              setCurrentQuizItemIndex(currentQuizItemIndex + 1)
+            } else {
+              p.onFinished(history)
+            }
           }}
         />
       </Flex>

@@ -14,6 +14,7 @@ import { SetQuizCategory } from './features/SetQuizCategory'
 import { SetQuizDifficulty } from './features/SetQuizDifficulty'
 import { QuizAPI } from './api/quiz-api'
 import { PlayQuiz } from './features/PlayQuix/PlayQuiz'
+import { Score } from './features/Score'
 
 // enum used to declare what type of data is allowed to be used in the useState for Steps. In this case, we're using it to dictate what stage of play the user is in whilst they use the app.
 
@@ -34,6 +35,7 @@ export function App() {
     type: QuizType.Multiple
   })
   const [quiz, setQuiz] = useState<QuizItem[]>([])
+  const [history, setHistory] = useState<boolean[]>([])
 
   // console.log(quizParams)
 
@@ -91,9 +93,22 @@ export function App() {
           />
         )
       case Step.Play:
-        return <PlayQuiz quiz={quiz} />
+        return (
+          <PlayQuiz
+            quiz={quiz}
+            onFinished={(history_: boolean[]) => {
+              setHistory(history_)
+              setStep(Step.ScoreScreen)
+            }}
+          />
+        )
       case Step.ScoreScreen:
-        return <></>
+        return (
+          <Score
+            history={history}
+            onNext={() => setStep(Step.SetQuestionQty)}
+          />
+        )
       default:
         return null
     }
