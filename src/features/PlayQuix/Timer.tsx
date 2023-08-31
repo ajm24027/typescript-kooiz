@@ -13,6 +13,7 @@ export function Timer(p: { max: number; onFinished: () => void }) {
   useEffect(() => {
     if (progress <= 0) {
       p.onFinished()
+      //@ts-ignore
       clearInterval(timer)
     }
   }, [progress])
@@ -22,6 +23,7 @@ export function Timer(p: { max: number; onFinished: () => void }) {
       setProgress((prevProgress) => prevProgress - 1)
     }, 1000)
     return () => {
+      //@ts-ignore
       clearInterval(timer)
     }
   }, [])
