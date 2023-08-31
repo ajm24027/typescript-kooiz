@@ -4,12 +4,15 @@ This project is the capstone project of the course: https://www.udemy.com/course
 
 Within it, the following tools and Typescript concepts are leveraged:
 
-#### Tools:
+#### Tech used:
 
 - ChakraUI
 - Lottie Animations
+- HTML
+- CSS
+- Typescript
 
-#### Typescript & Friends:
+#### Typescript Concepts & Friends used:
 
 - Enumerated, Array, & Custom Types
 - As Operator
