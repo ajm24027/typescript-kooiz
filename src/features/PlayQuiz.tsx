@@ -6,13 +6,20 @@ import {
   RadioGroup,
   SimpleGrid,
   Radio,
-  Text
+  Text,
+  HStack,
+  Box
 } from '@chakra-ui/react'
 import Lottie from 'lottie-react'
 import correctAnim from '../assets/lottie/correct.json'
 import incorrectAnim from '../assets/lottie/incorrect.json'
 
-// 1. Passing in Quiz which is expected to be an Array of QuizItems. 2. Setting the CurrentQuizItemIndex to 0, which is the first question returned in the response array. 3. Setting the current QuizItem - which is set to whatever the index is at the time. 4. Setting Available Answers to state by including the correct answer and the "spread" incorrect answers into an array of strings.
+// 1. Passing the Quiz Array (of QuizItems) into the PlayQuiz component.
+// 2. CurrentQuizItemIndex is initialized and is given a default state of 0, or the first question returned in the Quiz Prop.
+// 3. currentQuizItem is an object that retrieves the individual QuizItem information for the currentQuizItemIndex - correct_answer, incorrect_answers, question, etc.
+// 4. availableAnswers is initialized as an empty array that expects strings and will recieve an array built from correct_answer & incorrect_answers later in a useEffect.
+// 5. answer is initialized to record the answer that we select inside the radio group.
+// 6. Question Status is initialized and expects 3 kinds of states, default state is set to unanswered because on mount we haven't answered a question.
 
 export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   const [currentQuizItemIndex, setCurrentQuizItemIndex] = useState<number>(0)
@@ -22,10 +29,15 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
   const [questionStatus, setQuestionStatus] = useState<
     'valid' | 'invalid' | 'unanswered'
   >('unanswered')
+  const [history, setHistory] = useState<boolean[]>([])
+
+  // A boolean value that accepts an answer, will return truthy when the answer we choose matches the correct answer. Used later on for further state management.
 
   const isValidAnswer = (answer: string): boolean => {
     return answer === currentQuizItem.correct_answer
   }
+
+  // map used on the availableAnswers array that is populated on mount. Uses the radio component and builds out the UI used to see and answer the question given to us.
 
   const radioList = availableAnswers.map((availableAnswer: string) => {
     return (
@@ -44,6 +56,8 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     )
   })
 
+  // useEffect that combines the answers from the QuizItem Object, sort is used to shuffle the answers for us. The currentQuizItemIndex is passed into the dependency array because the answers should change when a new question is prompted (i.e. when the index is incremented and we move onto the next question)
+
   useEffect(() => {
     setAvailableAnswers(
       [
@@ -53,19 +67,47 @@ export const PlayQuiz = (p: { quiz: QuizItem[] }) => {
     )
   }, [currentQuizItemIndex])
 
+  // useEffect that watches our answer. The logic is used to decide whether or not our answer was right or wrong.
+
   useEffect(() => {
     if (answer) {
-      if (isValidAnswer(answer)) {
+      const isValid = isValidAnswer(answer)
+      if (isValid) {
         setQuestionStatus('valid')
       } else {
         setQuestionStatus('invalid')
       }
+      setHistory((prevHistory) => [...prevHistory, isValid])
     }
   }, [answer])
+
+  const renderProgressBar = () => {
+    return (
+      <HStack>
+        {p.quiz.map((quizItem, i) => {
+          return (
+            <Box
+              key={i}
+              h={3}
+              w={25}
+              backgroundColor={
+                i >= currentQuizItemIndex
+                  ? 'gray.200'
+                  : history[i]
+                  ? 'green.300'
+                  : 'red.300'
+              }
+            ></Box>
+          )
+        })}
+      </HStack>
+    )
+  }
 
   return (
     <>
       <Flex direction={'column'} alignItems={'center'}>
+        {renderProgressBar()}
         <Heading
           fontSize="3xl"
           mt={100}
